@@ -1,0 +1,43 @@
+{
+    "name": "rakoitde/ci4bs4form",
+    "description": "Helper Class for GetBootstrap 4 Forms in codeigniter4",
+    "keywords": [
+        "forms",
+        "bootstrap",
+        "php",
+        "codeigniter4"
+    ],
+    "homepage": "https://github.com/rakoitde/ci4bs4form",
+    "type": "package",
+    "version": "1.0.0",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ralf Kornberger",
+            "email": "rakoitde@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rakoitde\\Ci4bs4form\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.2",
+        "phpstan/phpstan": "^0.12.80",
+        "squizlabs/php_codesniffer": "*"
+    },
+    "scripts": {
+        "test": [
+          "vendor/bin/phpunit"
+        ]
+    }
+}

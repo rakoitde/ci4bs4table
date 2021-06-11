@@ -1,0 +1,41 @@
+<?php
+
+namespace Rakoitde\ci4bs4table;
+ 
+
+class TableElement
+{
+
+	private array $classes;
+
+    protected string $baseurl;
+
+    protected array $values;
+
+    public function addClass(string $class): self
+    {
+        $classes = explode(" ", $class);
+        foreach ($classes as $class) {
+            $this->classes[] = $class;
+        }
+        return $this;
+    }
+
+    public function getClasses(): string
+    {
+        return isset($this->classes) ? implode(" ", $this->classes) : "";
+    }
+
+    public function BaseUrl(string $url): self
+    {
+        $this->baseurl = $url;
+        return $this;
+    }
+
+    public function Values($values): self
+    {
+        $this->values = $values;
+        return $this;
+    }
+
+}
