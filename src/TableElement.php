@@ -8,7 +8,7 @@ class TableElement
 
 	private array $classes;
 
-    protected string $baseurl;
+    protected string $uri;
 
     protected array $values;
 
@@ -26,9 +26,9 @@ class TableElement
         return isset($this->classes) ? implode(" ", $this->classes) : "";
     }
 
-    public function BaseUrl(string $url): self
+    public function Uri(string $uri): self
     {
-        $this->baseurl = $url;
+        $this->uri = $uri;
         return $this;
     }
 

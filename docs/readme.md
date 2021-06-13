@@ -1,6 +1,6 @@
-# CI4 Bootstrap4 Form
+# CI4 Bootstrap4 Table
 
-This package helps you to generate Bootstrap 4 Forms directly in PHP.
+This package helps you to generate Bootstrap 4 Tables directly in PHP.
 
 ## Table of Contents
 
@@ -22,9 +22,9 @@ composer require rakoitde/ci4bs4form
 
 - `php >= 7.4`
 
-## Bootstrap 4 Forms
+## Bootstrap 4 Tables
 
-- [Official Documentation](https://getbootstrap.com/docs/4.5/components/forms/)
+- [Official Documentation](https://getbootstrap.com/docs/4.5/content/tables/)
 
 ## License
 

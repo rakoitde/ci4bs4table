@@ -21,4 +21,7 @@ class Config
 
     public string $icontag = '<i class="bi bi-{icon}{class}"></i>';
 
+    public array $format = ["date"     => "d.m.Y",
+                            "datetime" => "d.m.Y H:i:s"];
+
 }

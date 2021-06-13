@@ -23,6 +23,17 @@ class Thtd extends TableElement
 
     public $parser;
 
+    public string $type = "text"; # text, date
+
+    public string $format = "";
+
+    public function Type($type, string $format = ""): self
+    {
+        $this->type = $type;
+        $this->format = $format;
+        return $this;
+    }
+
     public function Field(string $field): self
     {
         $this->field = $field;
@@ -110,7 +121,7 @@ class Thtd extends TableElement
     private function getHtmlCondition($row): string
     {
 
-        if (!isset($this->htmlcondition)) { return ""; }
+        if (!isset($this->htmlcondition)) { return $this->text; }
 
         $html="";
 
@@ -181,7 +192,6 @@ class Thtd extends TableElement
         $classes = $this->getAllClasses();
         $tag = $this->tag;
 
-
         $data = [
             'cellclasses' => trim($this->getClasses().' '.implode(" ", $this->getFilteredClasses($this->values))),
             'tag' => $this->tag,
@@ -189,7 +199,7 @@ class Thtd extends TableElement
             'sortable' => $this->sortable ?? false,
             'direction' => $this->directionicon ?? '',
             'href' => $this->getHref() ?? '',
-            'html' => $this->text.$this->getHtml($this->values).$this->getHtmlCondition($this->values),
+            'html' => $this->getHtml($this->values).$this->getHtmlCondition($this->values),
         ];
 
         $html = view('Rakoitde\ci4bs4table\Views\Cell', $data);

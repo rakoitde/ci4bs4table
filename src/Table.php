@@ -37,16 +37,6 @@ class Table extends TableElement
     protected $config;
 
 
-# tr,td:  table-active,primary,secondary,success,danger,warning,info,light,dark
-# tr,td bg: bg-primary,success,warning,danger,info
-
-    public function Inline(bool $inline = true):self
-    {
-      $this->inline = $inline;
-      if ($inline) { $this->addClass("form-inline"); }
-      return $this;
-    }
-
     public function Id(string $id): self
     {
         $this->id = $id;
@@ -104,7 +94,7 @@ class Table extends TableElement
     public function Thead(): Thead
     {
         if(!isset($this->thead)) { $this->thead = new Thead(); }
-        $this->thead->BaseUrl($this->baseurl);
+        $this->thead->Uri($this->uri);
         $this->thead->Values($this->values);
         return $this->thead;
     }
@@ -112,7 +102,7 @@ class Table extends TableElement
     public function Tbody(): Tbody
     {
         if(!isset($this->tbody)) { $this->tbody = new Tbody(); }
-        $this->tbody->BaseUrl($this->baseurl);
+        $this->tbody->Uri($this->uri);
         $this->tbody->Values($this->values);
         $this->tbody->addEntities($this->getEntities());
         return $this->tbody;
@@ -121,7 +111,7 @@ class Table extends TableElement
     public function Tfoot(): Tfoot
     {
         if(!isset($this->tfoot)) { $this->tfoot = new Tfoot(); }
-        $this->tfoot->BaseUrl($this->baseurl);
+        $this->tfoot->Uri($this->uri);
         $this->tfoot->Values($this->values);
         return $this->tfoot;
     }
@@ -139,7 +129,7 @@ class Table extends TableElement
             "tableclasses" => $this->getClasses(),
             "caption"      => $this->caption ?? '',
             "method"       => $this->config->method,
-            "baseurl"      => $this->baseurl,
+            "baseurl"      => $this->uri,
             "thead"        => $this->thead,
             "tbody"        => $this->tbody,
             "tfoot"        => $this->tfoot ?? null,

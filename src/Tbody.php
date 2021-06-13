@@ -15,6 +15,19 @@ class Tbody extends TableElement
 
     protected array $classfilter;
 
+    public function formatRows()
+    {
+        foreach ($this->cols as $col) {
+            if ($col->field!="" && $col->type!="text")
+            {
+                $field = new \stdClass(); 
+                $field->type = $col->type;
+                $field->format = $col->format;
+                $format[$col->field] = $field;
+            }
+        }
+    }
+
     public function addEntities($entities): self
     {
         $this->entities = $entities;
@@ -24,7 +37,7 @@ class Tbody extends TableElement
     public function Th(string $text): Th
     {
         $th = new Th($text);
-        $th->BaseUrl($this->baseurl);
+        $th->Uri($this->uri);
         $th->Values($this->values);
         $this->cols[] = $th;
         return $th;
@@ -33,7 +46,7 @@ class Tbody extends TableElement
     public function Td(string $text = "", string $condition = ""): Td
     {
         $th = new Td($text, $condition);
-        $th->BaseUrl($this->baseurl);
+        $th->Uri($this->uri);
         $th->Values($this->values);
         $this->cols[] = $th;
         return $th;
@@ -41,14 +54,40 @@ class Tbody extends TableElement
 
     public function toHtml(): string
     {
+
+$this->formatRows();
+
         $tbody = "\t".'<tbody>'.PHP_EOL;
         foreach ($this->entities as $obj) {
             $row = $obj->toRawArray();
+
             $classes = trim($this->getClasses().' '.implode(" ", $this->getFilteredClasses($obj->toArray())));
             $tbody.= "\t\t".'<tr class="'.$classes.'">'.PHP_EOL;
                 foreach ($this->cols as $col) {
-                    $col->text = $row[$col->field] ?? "";
-                    $col->Values($obj->toArray());
+
+                    if ($col->type=="date" || $col->type=="datetime") {
+                        $format = $col->format != "" ? $col->format : $col->config->format[$col->type];
+                        if ($row[$col->field]!="") {
+                            $date = date_create($row[$col->field]);
+                            $row[$col->field] = date_format($date,$format);
+                        }
+                    }
+
+                    if ($col->type=="currency") {
+                        if ($row[$col->field]!="") {
+                            $row[$col->field] = number_to_currency($row[$col->field], 'EUR');
+                        }
+                    }
+
+                    if ($col->type=="number") {
+                        if ($row[$col->field]!="") {
+                            $precision = intval($col->format) ?? 2;
+                            $row[$col->field] = number_format($row[$col->field], $precision, ',', '.');
+                        }
+                    }
+
+                    $col->Text($row[$col->field] ?? "");
+                    $col->Values($row);
                     $tbody.= $col->toHtml();
                 }
             $tbody.= "\t\t</tr>".PHP_EOL;

@@ -22,7 +22,7 @@ class Thead extends TableElement
     public function Th(string $text): Th
     {
         $th = new Th($text);
-        $th->BaseUrl($this->baseurl);
+        $th->Uri($this->uri);
         $th->Values($this->values);
         $th->Text($text);
         $this->cols[] = $th;
@@ -47,7 +47,7 @@ class Thead extends TableElement
         $options['filterqueries'] = $this->getAllFilterQueries();
 
         $thead = "\t".'<thead class="'.$this->getClasses().'">'.PHP_EOL;
-$thead.='<form class="px-4 py-3" method="get" action="'.$this->baseurl.'">';
+$thead.='<form class="px-4 py-3" method="get" action="'.$this->uri.'">';
         $thead.= "\t\t<tr>".PHP_EOL;
         foreach ($this->cols as $col) {
             $thead.= $col->toHtml($options);

@@ -29,7 +29,7 @@ class Th extends Thtd
 
     protected string $nextquery = '';
 
-    public function Sortable(bool $sortable = true): self
+    public function Sort(bool $sortable = true): self
     {
         $this->sortable = $sortable;
         $sortvar = $this->config->sortvar;
@@ -63,9 +63,14 @@ class Th extends Thtd
         return $this;
     }
 
+    public function Sortable(bool $sortable = true): self
+    {
+        return $this->Sort($sortable);
+    }
+
     public function getHref(bool $withnext = true): string
     {
-        $href = $this->baseurl."?".
+        $href = $this->uri."?".
                 implode("", $this->queries).
                 ($withnext ? $this->nextquery : '');
         return $href;
@@ -97,8 +102,6 @@ class Th extends Thtd
 
     private function getFilterIcon(): string
     {
-# <form class="px-4 py-3" method="get" action="'.$this->baseurl.'">
-#           </form>
         $iconclass = $this->isFiltered() ? "bi bi-funnel-fill" : "bi bi-funnel" ;
         $html ='
 <i class="'.$iconclass.'" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>';
