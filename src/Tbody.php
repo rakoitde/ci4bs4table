@@ -55,7 +55,7 @@ class Tbody extends TableElement
     public function toHtml(): string
     {
 
-$this->formatRows();
+#$this->formatRows();
 
         $tbody = "\t".'<tbody>'.PHP_EOL;
         foreach ($this->entities as $obj) {
@@ -66,8 +66,8 @@ $this->formatRows();
                 foreach ($this->cols as $col) {
 
                     if ($col->type=="date" || $col->type=="datetime") {
-                        $format = $col->format != "" ? $col->format : $col->config->format[$col->type];
                         if ($row[$col->field]!="") {
+                            $format = $col->format != "" ? $col->format : $col->config->format[$col->type];
                             $date = date_create($row[$col->field]);
                             $row[$col->field] = date_format($date,$format);
                         }
@@ -75,13 +75,14 @@ $this->formatRows();
 
                     if ($col->type=="currency") {
                         if ($row[$col->field]!="") {
-                            $row[$col->field] = number_to_currency($row[$col->field], 'EUR');
+                            $format = $col->format != "" ? $col->format : $col->config->format[$col->type];
+                            $row[$col->field] = number_to_currency($row[$col->field], $format);
                         }
                     }
 
                     if ($col->type=="number") {
                         if ($row[$col->field]!="") {
-                            $precision = intval($col->format) ?? 2;
+                            $precision = $col->format != "" ? intval($col->format) : intval($col->config->format[$col->type]);
                             $row[$col->field] = number_format($row[$col->field], $precision, ',', '.');
                         }
                     }
