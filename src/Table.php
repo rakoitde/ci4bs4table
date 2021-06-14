@@ -2,11 +2,7 @@
 
 namespace Rakoitde\ci4bs4table;
 
-#use Rakoitde\ChartJs\Data\Data;
-#use CodeIgniter\Validation\Validation;
 use CodeIgniter\HTTP\IncomingRequest;
-
-#use Rakoitde\ci4bs4form\InputElement;
 
 
 class Table extends TableElement
