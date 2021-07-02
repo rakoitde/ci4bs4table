@@ -85,7 +85,12 @@ trait ClassFilterTrait
 
             $field = $parser->setData($row)->renderString($filter->field);
             $value = $parser->setData($row)->renderString($filter->value);
-            
+
+            if ($this->type=="date" || $this->type=="datetime") {
+                $field = date_create($field);
+                $value = date_create($value);
+            }
+
             switch ($filter->operator) {
                 case '==':
                     if ($field == $value) { $classes[] = $filter->class; } 

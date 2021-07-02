@@ -29,7 +29,7 @@ class Filter
     public function Type(string $type = "text"): self
     {
 
-        $types=["text","checkbox"];
+        $types=["text","checkbox","date"];
         $this->filtered = true;
         $this->filtertype = in_array($type, $types) ? $type : "text";
 
@@ -79,7 +79,20 @@ class Filter
 
     public function getFormField(): string
     {
-        $html = $this->filtertype == "checkbox" ? $this->getCheckboxField() : $this->getTextField();
+        switch ($this->filtertype) {
+            case 'checkbox':
+                $html = $this->getCheckboxField();
+                break;
+            
+            case 'date':
+                $html = $this->getDateField();
+                break;
+            
+            default:
+                $html = $this->getTextField();
+                break;
+        }
+
         return $html;
     }
 
@@ -93,6 +106,20 @@ class Filter
         ];
 
         $html = view('Rakoitde\ci4bs4table\Views\TextField', $data);
+
+        return $html;
+    }
+
+    public function getDateField(): string
+    {
+
+        $data = [
+            "field"     => $this->field,
+            "filtervar" => $this->config->filtervar,
+            "value"     => $this->values[$this->field] ?? '',
+        ];
+
+        $html = view('Rakoitde\ci4bs4table\Views\DateField', $data);
 
         return $html;
     }

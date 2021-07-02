@@ -48,6 +48,7 @@ class Tbody extends TableElement
         $th = new Td($text, $condition);
         $th->Uri($this->uri);
         $th->Values($this->values);
+        $th->_fields = $this->_fields;
         $this->cols[] = $th;
         return $th;
     }

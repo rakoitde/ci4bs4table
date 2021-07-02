@@ -25,6 +25,7 @@ class Thead extends TableElement
         $th->Uri($this->uri);
         $th->Values($this->values);
         $th->Text($text);
+        $th->_fields = $this->_fields;
         $this->cols[] = $th;
         return $th;
     }

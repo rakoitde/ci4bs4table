@@ -26,6 +26,8 @@ class Table extends TableElement
 
     protected $fields;
 
+    protected array $_fields;
+
     protected $entities;
 
     protected int $perpage = 15;
@@ -92,6 +94,7 @@ class Table extends TableElement
         if(!isset($this->thead)) { $this->thead = new Thead(); }
         $this->thead->Uri($this->uri);
         $this->thead->Values($this->values);
+        $this->thead->_fields = $this->_fields;
         return $this->thead;
     }
 
@@ -101,6 +104,7 @@ class Table extends TableElement
         $this->tbody->Uri($this->uri);
         $this->tbody->Values($this->values);
         $this->tbody->addEntities($this->getEntities());
+        $this->tbody->_fields = $this->_fields;
         return $this->tbody;
     }
 
@@ -187,6 +191,17 @@ if (!isset($this->caption)) {
       $this->model = $model;
       $this->fields = array_keys($this->model->first()->toArray());
 
+
+#d($this->model);
+$db = db_connect();
+$fields = $db->getFieldData($this->model->table);
+
+foreach ($fields as $field) {
+    $this->_fields[$field->name] = new Field($field);
+}
+
+
+
       return $this->model;
     }
 
@@ -199,13 +214,45 @@ if (!isset($this->caption)) {
     {
       // Filter
       $filters  = $this->getFilter();
-
       if (count($filters)>0) {
         $this->model->groupStart();
         foreach ($this->getFilter() as $field => $filter) {
           if ($filter=="") { continue; }
 
-          if (is_string($filter))
+          $fieldtype=$this->_fields[$field]->fieldtype;
+          if ($fieldtype=='date') {
+
+                $datefilter = $filters[$field];
+
+                $islaterorequal   = substr($datefilter, 0, 2)==">=" ?? false;
+                $isearlierorequal = substr($datefilter, 0, 2)=="<=" ?? false;
+                $datefilter = $islaterorequal || $isearlierorequal ? substr($datefilter, 2) : $datefilter;
+                
+                $islater   = substr($datefilter, 0, 1)==">" ?? false;
+                $isearlier = substr($datefilter, 0, 1)=="<" ?? false;
+                $datefilter = $isearlier || $islater ? substr($datefilter, 1) : $datefilter;
+
+                $d = implode("-",array_reverse(explode(".", $datefilter)));
+
+                if ($isearlier) {
+                    $this->model->Where($field." <", $d);
+                }
+                if ($islater) {
+                    $this->model->Where($field." >", $d);
+                }
+                if ($isearlierorequal) {
+                    $this->model->Where($field." <=", $d);
+                }
+                if ($islaterorequal) {
+                    $this->model->Where($field." >=", $d);
+                }
+                if (!($islater || $isearlier || $isearlierorequal || $islaterorequal)) {
+                    $this->model->Like($field, $d."%");
+                }
+
+          }
+
+          if ( is_string($filter) && $fieldtype!='date' ) ##$field!='testdate'
           {
             $side = "";
             if (mb_strpos($filter, "*") !== false) {

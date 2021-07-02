@@ -32,6 +32,8 @@ class Th extends Thtd
     public function Sort(bool $sortable = true): self
     {
         $this->sortable = $sortable;
+        $this->_fields[$this->field]->sortable = $sortable;
+
         $sortvar = $this->config->sortvar;
         $sortvalues = $this->values[$sortvar] ?? [];
 
@@ -79,6 +81,10 @@ class Th extends Thtd
     public function Filter(string $type = "text", array $options = []): Filter
     {
 
+        $this->_fields[$this->field]->formfieldtype = $type;
+        $this->_fields[$this->field]->filterable = true;
+        $this->_fields[$this->field]->options = $options;
+        
         $this->filtered = true;
 
         if (!isset($this->_filter)) {
@@ -113,9 +119,9 @@ class Th extends Thtd
         $html='
         <div class="dropdown-menu dropdown-menu-right p-2" aria-labelledby="dropdownMenuButton">
             <div class="form-group">
-                <input type="hidden" class="form-control" name="sort['.$this->field.']" id="sort'.$this->field.'" value="'.($this->direction ?? '').'">
-            </div>
         ';
+        $html.= $this->direction=='' ? '' : '<input type="hidden" class="form-control" name="sort['.$this->field.']" id="sort'.$this->field.'" value="'.($this->direction ?? '').'">';
+        $html.= '</div>';
         $html.= $this->_filter->getFormField();
         $html.= '
             <button type="submit" class="btn"><i class="bi bi-check-lg"></i>&nbsp;&nbsp;filtern</button>
