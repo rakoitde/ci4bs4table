@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Rakoitde\\Ci4bs4table\\": "src/"
+            "Rakoitde\\ci4bs4table\\": "src"
         }
     },
     "autoload-dev": {
