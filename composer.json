@@ -1,13 +1,13 @@
 {
-    "name": "rakoitde/ci4bs4form",
-    "description": "Helper Class for GetBootstrap 4 Forms in codeigniter4",
+    "name": "rakoitde/ci4bs4table",
+    "description": "Helper Class for GetBootstrap 4 Table in codeigniter4",
     "keywords": [
         "forms",
         "bootstrap",
         "php",
         "codeigniter4"
     ],
-    "homepage": "https://github.com/rakoitde/ci4bs4form",
+    "homepage": "https://github.com/rakoitde/ci4bs4table",
     "type": "package",
     "version": "1.0.0.0",
     "license": "MIT",
@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Rakoitde\\Ci4bs4form\\": "src/"
+            "Rakoitde\\Ci4bs4table\\": "src/"
         }
     },
     "autoload-dev": {
