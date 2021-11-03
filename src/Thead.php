@@ -5,7 +5,7 @@ namespace Rakoitde\ci4bs4table;
 class Thead extends TableElement
 {
 
-    public array $cols;
+    public array $cols = [];
 
     public function Dark(): self
     {

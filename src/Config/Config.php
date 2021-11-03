@@ -14,7 +14,9 @@ class Config
     | set this variable to ""
     |
     */
-	public string $size = "sm";
+	public string $size = "";
+
+    public bool $striped = true;
 
     /*
     |--------------------------------------------------------------------------
@@ -25,6 +27,12 @@ class Config
     |
     */
     public string $method = "get";
+
+
+    public bool $sortable = true;
+
+
+    public bool $filterable = true;
 
     /*
     |--------------------------------------------------------------------------
@@ -100,5 +108,22 @@ class Config
                             "number"   => "2",           # precision 123,45
                             "currency" => "EUR",         # 1.234,56 €
                         ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Directionicon
+    |--------------------------------------------------------------------------
+    |
+    | Define the default Icons for the sort directions.
+    |
+    */
+    public array $directionicon = [
+                ''=>'', 
+                'asc'=>'<i class="bi bi-sort-down-alt"></i>', 
+                'desc'=>'<i class="bi bi-sort-up"></i>'
+        ];
+
+
+    public string $templatename = 'TemplateBS4';
 
 }

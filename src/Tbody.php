@@ -9,7 +9,7 @@ class Tbody extends TableElement
 
     protected $entities;
 
-    public array $cols;
+    public array $cols = [];
 
     protected array $rows;
 
