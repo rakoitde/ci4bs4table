@@ -74,6 +74,9 @@ class Config
     */
     public string $perpagevar = "_perpage";
 
+
+    public array $perpage_sizes = [10,15,20,25,50,100,200,500];
+
     /*
     |--------------------------------------------------------------------------
     | Per Page Pagination Value
@@ -105,9 +108,14 @@ class Config
     */
     public array $format = ["date"     => "d.m.Y",       # 01.01.2021
                             "datetime" => "d.m.Y H:i:s", # 01.01.2021 12:30:00
-                            "number"   => "2",           # precision 123,45
+                            "decimal"  => "2",           # precision 123,45
+                            "float"    => "2",           # precision 123,45
                             "currency" => "EUR",         # 1.234,56 €
                         ];
+
+    public array $options = [
+        'checkbox' => ['1' => 'Ja', '0' => 'Nein'],
+    ];  
 
     /*
     |--------------------------------------------------------------------------

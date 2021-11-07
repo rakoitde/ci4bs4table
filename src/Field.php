@@ -40,7 +40,7 @@ class Field
         }
 
         if (in_array($type, ['decimal','float'])) {
-            $this->precision = $this->config->format['number']; 
+            $this->precision = $this->config->format['decimal']; 
         }        
 
     }

@@ -32,6 +32,11 @@ class TableElement
         return $this;
     }
 
+    public function getUri(): string
+    {
+        return $this->uri;
+    }
+
     public function Values($values): self
     {
         $this->values = $values;

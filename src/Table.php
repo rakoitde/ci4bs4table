@@ -16,6 +16,8 @@ class Table extends TableElement
 
     public string $caption;
 
+    private array $captions;
+
     protected thead $thead;
 
     protected tbody $tbody;
@@ -31,6 +33,8 @@ class Table extends TableElement
     protected array $_fields;
 
     protected $entities;
+
+    protected array $options;
 
     protected int $perpage = 15;
 
@@ -68,6 +72,7 @@ class Table extends TableElement
     public function Caption(string $caption = ""): self
     {
         $this->caption = $caption;
+        $this->captions[] = $caption;
         return $this;
     }
 
@@ -149,6 +154,25 @@ class Table extends TableElement
     }
 
     /**
+     * { function_description }
+     *
+     * @param      array  $options  The options
+     *
+     * @return     self   ( description_of_the_return_value )
+     */
+    public function Options(array $options): self 
+    {
+        $this->options = $options;
+        return $this;
+    }
+
+    public function addColumns() {
+        foreach ($this->fields as $field) {
+            $this->addColumn($field);
+        }
+    }
+
+    /**
      * Adds a column.
      *
      * @param      string  $fieldname  The fieldname
@@ -168,7 +192,7 @@ class Table extends TableElement
         if (isset($this->_fields[$fieldname])) {
             $column->Field($this->_fields[$fieldname]);
             $column->Sort($this->sortable);
-            $column->Filter($this->filterable);
+            if ($this->filterable) { $column->Filter(null ,$this->options ?? []); }
             $column->Filtervalue( $this->filtervalues[$this->config->filtervar][$fieldname] ?? null );
         }
 
@@ -276,11 +300,16 @@ class Table extends TableElement
             'class' => $this->getClasses(),
         ];
 
-
-#d($this->config, $this->template, stringify_attributes($attributes));
+        if (!isset($this->columns) || count($this->columns)===0) { $this->addColumns(); }
 
         // Table
         $html = sprintf($t->table_open, stringify_attributes($attributes));
+        // Caption
+        if (isset($this->captions)) {
+            foreach ($this->captions as $caption) {
+                $html.= sprintf($t->caption, $caption);
+            }
+        }
         // Form
         $html.= sprintf($t->table_form, $this->id, $this->uri);
         // Thead
@@ -331,8 +360,13 @@ class Table extends TableElement
                 $html.= $column->getFiltervalue() ? sprintf($t->heading_cell_filter_dropdown_icon_filtered) :sprintf($t->heading_cell_filter_dropdown_icon_notfiltered);
                 $html.=sprintf($t->heading_cell_filter_dropdown_start);
 
-                #$html.=sprintf($t->heading_cell_filter_text);
-                $template = $t->heading_cell_filter_text;
+                // select filter template
+                switch ($column->getFiltertype()) {
+                    case 'text':     $template = $this->parseFilterText(); break;
+                    case 'checkbox': $template = $this->parseFilterCheckbox($column); break;
+                    default:         $template = $this->parseFilterText(); break;
+                }
+                #$template = $t->heading_cell_filter_text;
                 $template = str_replace("{id}", $this->id, $template);
                 $template = str_replace("{filtervar}", $this->config->filtervar, $template);
                 $template = str_replace("{fieldname}", $column->fieldname, $template);
@@ -351,6 +385,41 @@ class Table extends TableElement
     /**
      * { function_description }
      *
+     * @return     string  ( description_of_the_return_value )
+     */
+    private function parseFilterText(): string 
+    {
+        return $this->template->heading_cell_filter_text;
+    }
+
+    private function parseFilterCheckbox($column): string
+    {
+        $t = $this->template;
+        $template = $t->heading_cell_filter_checkbox_start;
+        $options = $column->getOptions();
+        $option = $column->getOption($column->fieldname);
+
+        if (count($options)===0) { 
+            $column->Options([$column->fieldname => $this->config->options['checkbox']]); 
+            $options = $column->getOptions();
+        }
+
+        if ($options) {
+            foreach ($column->getOptions()[$column->fieldname] as $key => $value) {
+                $checkbox = str_replace("{key}"    , $key,   $t->heading_cell_filter_checkbox);
+                $checkbox = str_replace("{value}"  , $value, $checkbox);
+                $checkbox = str_replace("{checked}", $column->getFiltervalue($key) ? "checked" : "", $checkbox);
+                $template.= $checkbox;
+            }
+        }
+        $template.= $t->heading_cell_filter_checkbox_end;
+
+        return $template;
+    } 
+
+    /**
+     * { function_description }
+     *
      * @return     string  ( returns the tbody html code )
      */
     private function parseTBody(): string 
@@ -364,19 +433,91 @@ class Table extends TableElement
             $html.= sprintf($t->row_start, '');
             foreach ($this->getColumns() as $column)
             {
+
+                $column->Options($this->options ?? []);
                 $fieldname = $column->fieldname;
 
                 $attributes = [
-                    'class' => $column->getClasses("tbody"),
+                    'class' => $column->getClasses("tbody").' '.implode(' ', $column->getFilteredClasses($row)),
+                    'test'  => implode(" ", $column->getFilteredClasses($row)),
                 ];
+
                 $html.= sprintf($t->cell_start, stringify_attributes($attributes));
-                $html.= $column->getOption($row->$fieldname);
+                $html.= $column->getHtmlCondition($row);
                 $html.= sprintf($t->cell_end);
             }
             $html.= sprintf($t->row_end);
         }
 
         return $html;
+    }
+
+    public function getFormID(): string
+    {
+        return "form_".$this->id;
+    }
+
+    public function getPerPageSelected(int $rows): string 
+    {
+        if (!isset($this->values[$this->config->perpagevar])) { return ''; }
+        return $rows==$this->values[$this->config->perpagevar] ? "selected" : '';
+    }
+
+    public function getPerPageSelect(): string
+    {
+        $t = $this->template;
+        $start = str_replace('{formid}', $this->getFormID(),  $t->perpage_select_start);
+        $start = str_replace('{perpagevar}', $this->config->perpagevar,  $start);
+        $html = $start;
+        foreach ($this->config->perpage_sizes as $size) {
+            $option = str_replace('{value}', $size, $t->perpage_select_option);
+            $option = str_replace('{selected}', $this->getPerPageSelected((string)$size), $option);
+            #$option = str_replace(search, replace, subject)
+            $html.= $option;
+        }
+        $html.= $t->perpage_select_end;
+
+        return $html;
+    }
+
+    public function getSearchField(): string
+    {
+        $t = $this->template;
+        $field = str_replace('{searchvar}', $this->config->searchvar, $t->search_field);
+        $field = str_replace('{value}', $this->getSearch(), $field);
+        $field = str_replace('{formid}', $this->getFormID(), $field);
+
+        return $field;
+    }
+
+    public function getSearchSubmitButton(): string
+    {
+        $t = $this->template;
+        $field = str_replace('{formid}', $this->getFormID(), $t->submit_button );
+
+        return $field;
+    }
+
+    public function getSearchResetButton(): string
+    {
+        $t = $this->template;
+        $field = str_replace('{uri}', $this->getUri(), $t->reset_button );
+
+        return $field;
+    }
+
+    public function getSearchInlineForm(): string
+    {
+        $t = $this->template;
+        $form = str_replace('{pagerlinks}', $this->getPagerLinks(), $t->inline_form_start);
+        $elements = str_replace('{perpageselect}', $this->getPerPageSelect(), $t->inline_form_elements);
+        $elements = str_replace('{searchfield}', $this->getSearchField(), $elements);
+        $elements = str_replace('{submitbutton}', $this->getSearchSubmitButton(), $elements);
+        $elements = str_replace('{resetbutton}', $this->getSearchResetButton(), $elements);
+        $form.= $elements;
+        $form.= $t->inline_form_end;
+
+        return $form;
     }
 
     /**
@@ -445,7 +586,6 @@ class Table extends TableElement
         } elseif ($this->request->getMethod()=='get') {
             $values = $this->request->getGet();
         }
-d($values);
         $keys = [$this->config->sortvar, $this->config->filtervar];
         foreach ($keys as $key) {
             if (isset($values[$key])) {
@@ -500,9 +640,11 @@ d($values);
         if (count($filters)>0) {
             $this->model->groupStart();
             foreach ($this->getFilter() as $field => $filter) {
+
                 if ($filter=="") { continue; }
 
                 $fieldtype=$this->_fields[$field]->fieldtype;
+                // Date
                 if ($fieldtype=='date') {
 
                     $datefilter = $filters[$field];
@@ -530,7 +672,12 @@ d($values);
                         $this->model->Where($field." >=", $d);
                     }
                     if (!($islater || $isearlier || $isearlierorequal || $islaterorequal)) {
-                        $this->model->Like($field, $d."%");
+                        $side="";
+                        if (mb_strpos($filter, "*") !== false) {
+                            $side = "none";
+                            $datefilter = str_replace("*", "%", $datefilter);
+                        }
+                        $this->model->Like($field, $datefilter, $side);
                     }
 
                 }
@@ -548,7 +695,7 @@ d($values);
                 if (is_array($filter)) {
                     $this->model->groupStart();
                     foreach ($filter as $key => $value) {
-                        $this->model->OrLike($field, $key, $value);
+                        $this->model->Where($field, $key);
                     }
                     $this->model->groupEnd();
                 }
@@ -560,9 +707,11 @@ d($values);
 // Search
         $search   = $this->getSearch();
         if ($search>"") {
+            $this->model->groupStart();
             foreach ($this->fields as $field) {
                 $this->model->orLike($field, $search);
             }
+            $this->model->groupEnd();
         } 
 
 // Sort
@@ -571,6 +720,7 @@ d($values);
             $this->model->orderBy($key, $value);
         }
 
+$this->Caption($this->model->getCompiledSelect(false));
         $this->entities = $this->model->paginate( $this->perpage );
         return $this->entities;
     }
@@ -596,7 +746,7 @@ d($values);
     {
         $filtervar = $this->config->filtervar;
 
-        if (isset($this->values[$filtervar])) { 
+        if (isset($this->filtervalues[$filtervar])) { 
 
 
             /**
@@ -604,12 +754,11 @@ d($values);
              *
              * @var        callable
              */
-            $filters = array_filter($this->values[$filtervar], function($k) {
+            $filters = array_filter($this->filtervalues[$filtervar], function($k) {
                 return $k != '';
             });
             return $filters;
 
-            return $filters; 
         }
         return [];
     }
@@ -630,15 +779,30 @@ d($values);
     }
 
 
-
-
-
     /**
      * Creates filtervars from get, post and session
      */
     private function createFiltervars()
     {
 
+        $session = session();
+
+        // reset filter if no get request send
+        if (count($this->request->getGet())===0) {
+            $vars = [
+                $this->config->sortvar,
+                $this->config->filtervar,
+                $this->config->searchvar,
+                $this->config->perpagevar,
+            ];
+            foreach ($vars as $var) {
+                unset($_SESSION[$var]);
+            }
+        }
+
+        // remove filtervar from session
+        unset($_SESSION[$this->config->filtervar]); 
+        
         // Sortvar, Filtervar
         $vars = [
             $this->config->sortvar,
@@ -677,12 +841,7 @@ d($values);
 
         $this->filtervalues = $filtervar;
 
-        d($filtervar, $this->request->getGet($this->config->searchvar) ,session($this->config->searchvar));
-
-        $session = session();
         $session->set($filtervar);
-
-        d($_SESSION);
 
     }
 
@@ -700,7 +859,8 @@ d($values);
             $this->id = $this->model->table;
         }
 
-        $this->uri = uri_string(true);
+        $this->uri = current_url(true)->getPath();
+        d($this->uri);
 
         $this->addClass("table");
 
@@ -718,6 +878,7 @@ d($values);
         $this->createFiltervars();
 
         $this->addRequest();
+
     }
 
 }

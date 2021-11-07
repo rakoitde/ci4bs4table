@@ -81,7 +81,7 @@ class Tbody extends TableElement
                         }
                     }
 
-                    if ($col->type=="number") {
+                    if ($col->type=="decimal") {
                         if ($row[$col->field]!="") {
                             $precision = $col->format != "" ? intval($col->format) : intval($col->config->format[$col->type]);
                             $row[$col->field] = number_format($row[$col->field], $precision, ',', '.');

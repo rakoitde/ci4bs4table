@@ -7,73 +7,74 @@ trait ClassFilterTrait
 
     protected array $classfilter;
 
-    private function addClassFilter(string $class, string $field, string $operator, string $value, string $format = null)
+
+    private function addFilteredClass(string $class, array $conditions = [], string $format = null)
     {
         $classfilter = new \stdClass();
         $classfilter->class    = $class;
-        $classfilter->field    = $field;
-        $classfilter->operator = $operator;
-        $classfilter->value    = $value;
+        $classfilter->conditions = $conditions;
         $classfilter->format   = $format;
         $this->classfilter[] = $classfilter;
     }
 
-    public function Active(string $field, string $operator, string $value, string $format = null): self
+    public function Active(array $condition = [], string $format = null): self
     {
-        $this->addClassFilter("table-active", $field, $operator, $value, $format);
+        $this->addFilteredClass("table-active", $condition, $format);
         return $this;
     }
 
-    public function Primary(string $field, string $operator, string $value, string $format = null): self
+    public function Primary(array $condition = [], string $format = null): self
     {
-        $this->addClassFilter("table-primary", $field, $operator, $value, $format);
+        $this->addFilteredClass("table-primary", $condition, $format);
         return $this;
     }
 
-    public function Secondary(string $field, string $operator, string $value, string $format = null): self
+    public function Secondary(array $condition = [], string $format = null): self
     {
-        $this->addClassFilter("table-secondary", $field, $operator, $value, $format);
+        $this->addFilteredClass("table-secondary", $condition, $format);
         return $this;
     }
 
-    public function Success(string $field, string $operator, string $value, string $format = null): self
+    public function Success(array $condition = [], string $format = null): self
     {
-        $this->addClassFilter("table-success", $field, $operator, $value, $format);
+        $this->addFilteredClass("table-success", $condition, $format);
         return $this;
     }
 
-    public function Warning(string $field, string $operator, string $value, string $format = null): self
+    public function Warning(array $condition = [], string $format = null): self
     {
-        $this->addClassFilter("table-warning", $field, $operator, $value, $format);
+        $this->addFilteredClass("table-warning", $condition, $format);
         return $this;
     }
 
-    public function Danger(string $field, string $operator, string $value, string $format = null): self
+    public function Danger(array $condition = [], string $format = null): self
     {
-        $this->addClassFilter("table-danger", $field, $operator, $value, $format);
+        $this->addFilteredClass("table-danger", $condition, $format);
         return $this;
     }
 
-    public function Info(string $field, string $operator, string $value, string $format = null): self
+    public function Info(array $condition = [], string $format = null): self
     {
-        $this->addClassFilter("table-info", $field, $operator, $value, $format);
+        $this->addFilteredClass("table-info", $condition, $format);
         return $this;
     }
 
-    public function Light(string $field, string $operator, string $value, string $format = null): self
+    public function Light(array $condition = [], string $format = null): self
     {
-        $this->addClassFilter("table-light", $field, $operator, $value, $format);
+        $this->addFilteredClass("table-light", $condition, $format);
         return $this;
     }
 
-    public function Dark(string $field, string $operator, string $value, string $format = null): self
+    public function Dark(array $condition = [], string $format = null): self
     {
-        $this->addClassFilter("table-dark", $field, $operator, $value, $format);
+        $this->addFilteredClass("table-dark", $condition, $format);
         return $this;
     }
 
     public function getFilteredClasses($row): array
     {
+
+        if (!is_array($row)) { $row = $row->toArray(); }
 
         $parser = \Config\Services::parser();
 
@@ -83,15 +84,17 @@ trait ClassFilterTrait
 
         foreach ($this->classfilter as $filter) {
 
-            $field = $parser->setData($row)->renderString($filter->field);
-            $value = $parser->setData($row)->renderString($filter->value);
+            list($operand_a, $operator, $operand_b) = $filter->conditions;
 
-            if ($this->type=="date" || $this->type=="datetime") {
+            $field = $parser->setData($row)->renderString($operand_a);
+            $value = $parser->setData($row)->renderString($operand_b);
+            if ((isset($this->formattype) ? $this->formattype=="date" : $this->type=="date") || 
+                (isset($this->formattype) ? $this->formattype=="datetime" : $this->type=="datetime")) {
                 $field = date_create($field);
                 $value = date_create($value);
             }
 
-            switch ($filter->operator) {
+            switch ($operator) {
                 case '==':
                     if ($field == $value) { $classes[] = $filter->class; } 
                     break;
@@ -124,6 +127,7 @@ trait ClassFilterTrait
                     # code...
                     break;
             }
+#d([$field, $value, $filter->class, $classes]);
         }
 
         return $classes;
