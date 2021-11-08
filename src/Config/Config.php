@@ -18,6 +18,8 @@ class Config
 
     public bool $striped = true;
 
+    public bool $hover = true;
+
     /*
     |--------------------------------------------------------------------------
     | Method to get the requested variables
@@ -34,6 +36,9 @@ class Config
 
     public bool $filterable = true;
 
+
+    public bool $paginate = true;
+
     /*
     |--------------------------------------------------------------------------
     | Sort
@@ -42,7 +47,7 @@ class Config
     | Set the sort variable which holds the selected sorts
     |
     */
-    public string $sortvar = "_sort";
+    public string $sortvar = "_sort_";
 
     /*
     |--------------------------------------------------------------------------
@@ -52,7 +57,7 @@ class Config
     | Set the search variable is used in a fulltext search field
     |
     */
-    public string $searchvar = "_search";
+    public string $searchvar = "_search_";
 
     /*
     |--------------------------------------------------------------------------
@@ -62,7 +67,7 @@ class Config
     | Set the filter variable which holds the selected filters
     |
     */
-    public string $filtervar = "_filter";
+    public string $filtervar = "_filter_";
 
     /*
     |--------------------------------------------------------------------------
@@ -72,7 +77,7 @@ class Config
     | Set the perpage variable which holds the selected per page size
     |
     */
-    public string $perpagevar = "_perpage";
+    public string $perpagevar = "_perpage_";
 
 
     public array $perpage_sizes = [10,15,20,25,50,100,200,500];

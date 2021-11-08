@@ -48,6 +48,8 @@ class Table extends TableElement
 
     protected array $filtervalues;
 
+    protected bool $paginate;
+
 
     /**
      * { function_description }
@@ -153,6 +155,12 @@ class Table extends TableElement
         return $this;
     }
 
+    public function Paginate(bool $paginate = true):self
+    {
+        $this->paginate = $paginate;
+        return $this;
+    }
+
     /**
      * { function_description }
      *
@@ -190,6 +198,9 @@ class Table extends TableElement
         $column = new Column($fieldname);
 
         if (isset($this->_fields[$fieldname])) {
+
+
+
             $column->Field($this->_fields[$fieldname]);
             $column->Sort($this->sortable);
             if ($this->filterable) { $column->Filter(null ,$this->options ?? []); }
@@ -205,6 +216,27 @@ class Table extends TableElement
     public function getColumns()
     {
         return $this->columns;
+    }
+
+    public function Column(string $fieldname): Column
+    {
+        foreach ($this->columns as $column) {
+            if ($column->fieldname==$fieldname) {
+                return $column;
+            }
+        }
+        return new Column;
+    }
+
+    public function removeColumn(string $fieldname): self
+    {
+        foreach ($this->columns as $key => $column) {
+            if ($column->fieldname==$fieldname) {
+                unset($this->columns[$key]);
+
+            }
+        }
+        return $this;
     }
 
     /**
@@ -238,7 +270,7 @@ class Table extends TableElement
      *
      * @return     Thead  ( description_of_the_return_value )
      */
-    public function Thead(): Thead
+    public function ___Thead(): Thead
     {
         if(!isset($this->thead)) { $this->thead = new Thead(); }
         $this->thead->Uri($this->uri);
@@ -252,7 +284,7 @@ class Table extends TableElement
      *
      * @return     Tbody  ( description_of_the_return_value )
      */
-    public function Tbody(): Tbody
+    public function ___Tbody(): Tbody
     {
         if(!isset($this->tbody)) { $this->tbody = new Tbody(); }
         $this->tbody->Uri($this->uri);
@@ -267,7 +299,7 @@ class Table extends TableElement
      *
      * @return     Tfoot  ( description_of_the_return_value )
      */
-    public function Tfoot(): Tfoot
+    public function ___Tfoot(): Tfoot
     {
         if(!isset($this->tfoot)) { $this->tfoot = new Tfoot(); }
         $this->tfoot->Uri($this->uri);
@@ -282,7 +314,7 @@ class Table extends TableElement
      */
     public function getPagerLinks()
     {
-
+        $this->getEntities();
         return $this->model->pager !== null ? $this->model->pager->links() : '';
     }
 
@@ -404,8 +436,9 @@ class Table extends TableElement
             $options = $column->getOptions();
         }
 
+
         if ($options) {
-            foreach ($column->getOptions()[$column->fieldname] as $key => $value) {
+            foreach ($options[$column->fieldname] as $key => $value) {
                 $checkbox = str_replace("{key}"    , $key,   $t->heading_cell_filter_checkbox);
                 $checkbox = str_replace("{value}"  , $value, $checkbox);
                 $checkbox = str_replace("{checked}", $column->getFiltervalue($key) ? "checked" : "", $checkbox);
@@ -443,7 +476,8 @@ class Table extends TableElement
                 ];
 
                 $html.= sprintf($t->cell_start, stringify_attributes($attributes));
-                $html.= $column->getHtmlCondition($row);
+
+                $html.= $column->getValue($row);
                 $html.= sprintf($t->cell_end);
             }
             $html.= sprintf($t->row_end);
@@ -459,8 +493,8 @@ class Table extends TableElement
 
     public function getPerPageSelected(int $rows): string 
     {
-        if (!isset($this->values[$this->config->perpagevar])) { return ''; }
-        return $rows==$this->values[$this->config->perpagevar] ? "selected" : '';
+        if (!isset($this->filtervalues[$this->config->perpagevar])) { return ''; }
+        return $rows==$this->filtervalues[$this->config->perpagevar] ? "selected" : '';
     }
 
     public function getPerPageSelect(): string
@@ -520,12 +554,39 @@ class Table extends TableElement
         return $form;
     }
 
+    public function pagerFrom(): string
+    {
+        $pager = $this->model->pager;
+        $pagerFrom = min(($pager->getCurrentPage()*$pager->getPerPage())-$pager->getPerPage()+1, $pager->getTotal());
+        return $pagerFrom;
+    } 
+
+    public function pagerTo(): string
+    {
+        $pager = $this->model->pager;
+        $pagerTo = min($pager->getCurrentPage()*$pager->getPerPage(), $pager->getTotal());
+        return $pagerTo;
+    }
+
+    public function pagerTotal(): string
+    {
+        return $this->model->pager->getTotal();
+    }
+
+    public function addPagerCaption()
+    {
+        $caption = str_replace('{from}' , $this->pagerFrom() , $this->template->pager_caption);
+        $caption = str_replace('{to}'   , $this->pagerTo()   , $caption);
+        $caption = str_replace('{total}', $this->pagerTotal(), $caption);
+        $this->Caption($caption);
+    }
+
     /**
      * Returns a html representation of the object.
      *
      * @return     string  Html representation of the object.
      */
-    public function toHtml(): string
+    public function ___toHtml(): string
     {
         $data = [
             "pager"        => $this->model->pager,
@@ -567,7 +628,7 @@ class Table extends TableElement
      *
      * @return     string  Json representation of the object.
      */
-    public function toJson(): string
+    public function ___toJson(): string
     {
         $json = json_encode($this);
         return $json;
@@ -637,6 +698,7 @@ class Table extends TableElement
     {
 // Filter
         $filters  = $this->getFilter();
+
         if (count($filters)>0) {
             $this->model->groupStart();
             foreach ($this->getFilter() as $field => $filter) {
@@ -644,6 +706,7 @@ class Table extends TableElement
                 if ($filter=="") { continue; }
 
                 $fieldtype=$this->_fields[$field]->fieldtype;
+
                 // Date
                 if ($fieldtype=='date') {
 
@@ -682,6 +745,7 @@ class Table extends TableElement
 
                 }
 
+                // string
                 if ( is_string($filter) && $fieldtype!='date' )
                 {
                     $side = "";
@@ -692,10 +756,11 @@ class Table extends TableElement
                     $this->model->Like($field, $filter, $side);
                 }
 
+                // select
                 if (is_array($filter)) {
                     $this->model->groupStart();
                     foreach ($filter as $key => $value) {
-                        $this->model->Where($field, $key);
+                        $this->model->orWhere($field, $key);
                     }
                     $this->model->groupEnd();
                 }
@@ -704,8 +769,9 @@ class Table extends TableElement
             $this->model->groupEnd();
         }
 
-// Search
+        // Search
         $search   = $this->getSearch();
+
         if ($search>"") {
             $this->model->groupStart();
             foreach ($this->fields as $field) {
@@ -714,14 +780,22 @@ class Table extends TableElement
             $this->model->groupEnd();
         } 
 
-// Sort
+        // Sort
         $sortings = $this->getSort();
         foreach ($sortings as $key => $value) {
             $this->model->orderBy($key, $value);
         }
 
-$this->Caption($this->model->getCompiledSelect(false));
-        $this->entities = $this->model->paginate( $this->perpage );
+        #$this->Caption($this->model->getCompiledSelect(false));
+
+        // paginate or not
+        if ($this->paginate) {
+            $this->entities = $this->model->paginate( $this->perpage );
+            $this->addPagerCaption();
+        } else {
+            $this->entities = $this->model->findAll();
+        }
+
         return $this->entities;
     }
 
@@ -834,6 +908,10 @@ $this->Caption($this->model->getCompiledSelect(false));
 
         // Sites per page
         $filtervar[$this->config->perpagevar] = $this->request->getGet($this->config->perpagevar)!==NULL ? $this->request->getGet($this->config->perpagevar) : session($this->config->perpagevar);
+
+        $filtervar[$this->config->perpagevar] = $this->request->getGet($this->config->perpagevar) ?? session($this->config->perpagevar) ?? $this->config->perpage;
+
+
         if ($filtervar[$this->config->perpagevar]==NULL) { 
             unset($filtervar[$this->config->perpagevar]); 
             unset($_SESSION[$this->config->perpagevar]);
@@ -850,17 +928,21 @@ $this->Caption($this->model->getCompiledSelect(false));
      *
      * @param      string  $modelname  The modelname
      */
-    public function __construct(string $modelname = null) {
+    public function __construct($model) {
 
         $this->config = new \Rakoitde\ci4bs4table\Config\Config();
 
-        if (isset($modelname)) { 
-            $this->model = model($modelname); 
-            $this->id = $this->model->table;
+        if (is_string($model)) { 
+            $this->model = model($model); 
+        } elseif (is_object($model)) {
+            $this->model = $model;
         }
+        
+        $this->id = $this->model->table;
 
         $this->uri = current_url(true)->getPath();
-        d($this->uri);
+
+        $this->paginate = $this->config->paginate;
 
         $this->addClass("table");
 
@@ -869,6 +951,7 @@ $this->Caption($this->model->getCompiledSelect(false));
         $this->filterable = $this->config->filterable;
         if ($this->config->size=='sm') { $this->Small(); }
         if ($this->config->striped) { $this->Striped(); }
+        if ($this->config->hover) { $this->Hover(); }
 
         $this->template = config("Rakoitde\ci4bs4table\Config\\".$this->config->templatename); 
         $this->perpage = $this->config->perpage;

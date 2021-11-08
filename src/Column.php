@@ -171,13 +171,25 @@ class Column
         if ($type==null && $this->field->fieldtype    =="tinyint" && $this->field->maxlength==1)  { $type="checkbox"; }
         if ($type==null && $this->field->fieldtype    =="int"     && $this->field->precision==0)  { $type="int";      }
         if ($type==null && $this->field->fieldtype    =="decimal" && $this->field->precision==0)  { $type="int";      }
-        if ($type==null && $this->field->fieldtype    =="decimal" && $this->field->precision==2)  { $type="currency"; }
+        #if ($type==null && $this->field->fieldtype    =="decimal" && $this->field->precision==2)  { $type="currency"; }
         if ($type==null && $this->field->fieldtype    =="decimal" )                               { $type="decimal";  }
         if ($type==null && $this->field->fieldtype    =="float" )                                 { $type="float";    }
+
+        if (in_array($this->fieldname, ['currency','brutto','netto','preis','gesamt'])) {
+            $type = "currency";
+        }
 
         $this->filtertype = $type;
         $this->formattype = $type;
         $this->format = $this->config->format[$type] ?? '';
+
+        if (in_array($type, ['int','decimal','float','currency'])) {
+            $this->Right(); 
+        }
+
+        if (in_array($type, ['checkbox'])) {
+            $this->Center();
+        }
 
         if ($type=='checkbox' && 
             !isset($options[$this->fieldname]) &&
@@ -250,7 +262,7 @@ class Column
         return $this->options ?? [];
     }
 
-    public function getOption($text): string 
+    public function getOption($text) 
     {
         if ($text===NULL) { return ''; }
         return $this->options[$text] ?? $text;
@@ -350,9 +362,9 @@ class Column
     {
         $row = $rowobject->toArray();
         $options = $this->options;
-
         if (!isset($this->options)) { 
-            #$this->addOptions($this->options);
+            $this->options = $this->config->options;
+            $this->addOptions($this->options);
             return $row; 
         }
 
@@ -374,7 +386,7 @@ class Column
         return $value;
     }
 
-    public function getHtmlCondition($row): string
+    public function getValue($row): string
     {
         $parsedRows = $this->parseRowWithOptions($row);
         $fieldname = $this->fieldname;
@@ -387,7 +399,6 @@ class Column
 
             $value = $this->parser->setData($parsedRows)->renderString($h->html);
             $value = $this->formatValue($value);
-
 // if ($fieldname=="enabled" && $row->id=="2") {
 //     d([$fieldname, $h->html, $value, $row->$fieldname, $this->getOption($row->$fieldname)]);
 // }
@@ -457,7 +468,7 @@ d($h->convert);
 
         $this->fieldname = $columnname;
 
-        $this->Label($columnname);
+        $this->Label(ucfirst($columnname));
 
         $this->config = new \Rakoitde\ci4bs4table\Config\Config();
         $this->template = config("Rakoitde\ci4bs4table\Config\\".$this->config->templatename); 

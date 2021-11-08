@@ -25,6 +25,7 @@ class TemplateBS4
 	public string $table_open         = '<table %s>';
 	public string $table_form		  = '<form id="form_%s" class="px-4 py-3" method="get" action="%s"></form>';
 	public string $caption  		  = '<caption>%s</caption>';
+	public string $pager_caption      = 'Datensatz {from} bis {to} von {total}';
 	public string $table_close        = '</table>';
 
 	// thead
@@ -45,8 +46,8 @@ class TemplateBS4
 	public array $heading_cell_filtered_icon = [
 				true => 'class="bi bi-funnel-fill"',
 				false => 'class="bi bi-funnel"'];
-	public string $heading_cell_filter_dropdown_icon_filtered = '<i class="bi bi-funnel-fill" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>';
-	public string $heading_cell_filter_dropdown_icon_notfiltered = '<i class="bi bi-funnel" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>';
+	public string $heading_cell_filter_dropdown_icon_filtered = '<i class="bi bi-funnel-fill pl-1" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>';
+	public string $heading_cell_filter_dropdown_icon_notfiltered = '<i class="bi bi-funnel pl-1" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>';
 	public string $heading_cell_filter_dropdown_start = '<div class="dropdown-menu dropdown-menu-right p-2" aria-labelledby="dropdownMenuButton" x-placement="bottom-end" style="position: absolute; transform: translate3d(182px, 1074px, 0px); top: 0px; left: 0px; will-change: transform;">';
 	public string $heading_cell_filter_dropdown_end = '</div>';
 	// heading_cell_filter_text
@@ -82,7 +83,7 @@ class TemplateBS4
             <button type="button" class="btn" onclick="
             $(this).closest(\'.dropdown-menu\').find(\'._filter_options input:checkbox\').remove();
             $(\'#filter_{fieldname}\').val(\'\'); 
-            $(this.form).submit();
+            $(\'#form_{id}\').submit();
             "><i class="bi bi-x-lg"> filter löschen</i></button>';
 
     // tfoot
