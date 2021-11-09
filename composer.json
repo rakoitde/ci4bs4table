@@ -2,10 +2,10 @@
     "name": "rakoitde/ci4bs4table",
     "description": "Helper Class for GetBootstrap 4 Table in codeigniter4",
     "keywords": [
-        "codeigniter4"
+        "codeigniter4",
         "bootstrap",
         "table",
-        "php",
+        "php"
     ],
     "homepage": "https://github.com/rakoitde/ci4bs4table",
     "type": "package",
