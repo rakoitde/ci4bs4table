@@ -182,6 +182,10 @@ trait ClassFilterTrait
                 $field = date_create($field);
                 $value = date_create($value);
             }
+            if (in_array($this->formattype, ['int','number','float','decimal'])) {
+                $field = strval($field);
+                $value = strval($value);
+            }
 
             switch ($operator) {
                 case '==':

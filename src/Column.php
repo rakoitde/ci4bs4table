@@ -188,7 +188,7 @@ class Column
         $dirs = [""=>"asc", "asc"=>"desc", "desc"=>""];
         $this->sortnextdirection = $dirs[$direction];
 
-        $this->sortdirectionicon = $this->config->directionicon[$direction];
+        $this->sortdirectionicon = $this->template->heading_cell_sorted_icon[$direction];
 
         return $this;
     }

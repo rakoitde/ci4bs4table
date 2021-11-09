@@ -10,10 +10,10 @@ class Config
 {
 
     /**
-     * Set size to all somponents to 'sm', 'lg' od ''
-     * @var string
+     * sets table size to small
+     * @var bool
      */
-	public string $size = "";
+	public bool $small = true;
 
     /**
      * table striped
@@ -61,7 +61,7 @@ class Config
      * prefix for all filter vars
      * @var string
      */
-    public string $filtervar = "_filter_";
+    public string $filtervar = "_filter";
 
     /**
      * prefix for the perpage var
@@ -99,16 +99,6 @@ class Config
     public array $options = [
         'checkbox' => ['1' => 'Ja', '0' => 'Nein'],
     ];  
-
-    /**
-     * default icons for sort directions
-     * @var array
-     */
-    public array $directionicon = [
-                ''=>'', 
-                'asc'=>'<i class="bi bi-sort-down-alt"></i>', 
-                'desc'=>'<i class="bi bi-sort-up"></i>'
-        ];
 
     /**
      * used template config

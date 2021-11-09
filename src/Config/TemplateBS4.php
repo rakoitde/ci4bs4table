@@ -37,9 +37,10 @@ class TemplateBS4
 	public string $heading_cell_end   = '</th>';
 	public array  $heading_cell_sorted_icon = [
 		''=>'', 
-		'asc'=>'<i class="bi bi-sort-down-alt"></i>', 
-		'desc'=>'<i class="bi bi-sort-up"></i>'
+		'asc'=>'<i class="bi bi-sort-down-alt pl-1"></i>', 
+		'desc'=>'<i class="bi bi-sort-up pl-1"></i>'
 	];
+
 	public string $heading_cell_sorted_start = '<a class="text-reset" href="%s">';
 	public string $heading_cell_sorted_end   = '</a>';
 

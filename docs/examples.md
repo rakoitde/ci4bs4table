@@ -5,81 +5,118 @@
 - [Full Example](#Full-Example)
 - [HTML output](#HTML-output)
 
-## Full Example
+## Simplest way to use ci4bs4table
+
+Start with the controller.
+To convert dates and numbers we need this two helpers.
 
 ```php
-// Table
-$table = new Table("table");
-$table->Small()->Hover()->Striped();
-$table->Uri('table');
-$table->addRequest( \Config\Services::request() );
-$table->addModel( $this->model );
+<?php
 
-// Options
-$options["enabled"] = ["1"=>"Aktiviert","0"=>"Deaktiviert"];
+namespace App\Controllers;
 
-// THead
-$th = $table->Thead();
-$th->Th('#')           ->Field('id')      ->Sort();
-$th->Th("Benutzername")->Field("username")->Sort()->Filter();
-$th->Th("Vorname")     ->Field("surname") ->Sort()->Filter();
-$th->Th("Nachname")    ->Field("lastname")->Sort()->Filter();
-$th->Th("Password")    ->Field("password")->Sort()->Filter();
-$th->Th("SID")         ->Field("sid")     ->Sort()->Filter();
-$th->Th("Enabled")     ->Field("enabled") ->Sort()->Filter("checkbox",$options["enabled"]);
-$th->Th("Test Datum")  ->Field("testdate")->Sort()->Filter();
-$th->Th("Test JSON")   ->Field("testjson")->Sort()->Filter();
-$th->Th("");
+use App\Controllers\BaseController;
 
-// TBody
-$tb = $table->Tbody();
-$tb->Th('id');
-$tb->Td('username');
-$tb->Td()->Html("{surname}", '["{surname}","==","Ralf"]')
-	     ->Success("{surname}","==","Ralf");
-$tb->Td('lastname');
-$tb->Td('password');
-$tb->Td('sid');
-$tb->Td('enabled')->Center()
-                  ->Icon('file-earmark-person','["{enabled}","==","0"]','text-danger')
-                  ->Icon('file-earmark-person','["{enabled}","==","1"]','text-success')
-                  ->Html(' {enabled}', '', $options)
-                  ->Warning("{enabled}","==","0");
-$tb->Td('testdate')->Icon('file-earmark-person', '["{testdate}","==",""]')
-                   ->Html('{testdate}', '["{testdate}","!=",""]');
-$tb->Td('testjson');
-$tb->Td()->addClass("py-1")->Right()->Html('
-<div class="btn-group" role="group">
-<button type="button" class="btn btn-sm btn-outline-secondary">Left {id}</button>
-<button type="button" class="btn btn-sm btn-outline-primary">Middle</button>
-<button type="button" class="btn btn-sm btn-outline-danger">Right</button>
-</div>');
+use Rakoitde\Ci4bs4table\Table;
 
-#d($table);
+class TableController extends BaseController
+{
+
+    protected $helpers = ['date','number'];
+
+    public function index()
+    {
+
+        $table = new Table('App\Models\UserModel');
+
+        $data = [
+            'table'   => $table,
+        ];
+
+        return view('TableTest', $data);
+
+    }   
+
+}
+```
+
+In the TableTest view, we need the search inline form which we can place in a bootstrap navbar.
+```php
+<?= $table->getSearchInlineForm() ?>
+```
+Next step is to parse the table.
+```php
+<?= $table->parse() ?>
+```
+For the filter functionalities import the javascript view
+```php
+<?= $this->include('Rakoitde\Ci4bs4table\Views\ci4bs4table_js') ?>
+```
+
+Full view excample
+```php 
+<!-- Content -->
+<?= $this->section('content') ?>
+<!-- ################ Start: Content ################ --> 
+
+<!-- Start: Header -->
+<nav class="navbar navbar-expand-lg navbar-light border-bottom px-0">
+  <h1 class="h2">Ci4bs4table:  <span class="text-secondary">Test</span></h1>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+    <ul class="navbar-nav mr-auto">
+
+    </ul>
+
+    <?= $table->getSearchInlineForm() ?>
+
+  </div>
+</nav>
+<!-- End: Header -->
+
+<!-- Start: Table -->
+<?= $table->parse() ?>
+<!-- End: Table -->
 
 
-$data = [
-	'table'   => $table,
-];
+<!-- ################ Stop: Content ################ -->
+<?= $this->endSection() ?>
 
-return view('TableTest', $data);	
 
-#d($form->toHtml());
+<!-- Custom JS -->
+<?= $this->section('custom_js') ?>
 
+<?= $this->include('Rakoitde\Ci4bs4table\Views\ci4bs4table_js') ?>
+
+<?= $this->endSection() ?>
 ```
 
 ## Table
 
 In CodeIgniter 4 Controller
 
-### Table ID
+### Table instance
 ```php
-$table = new Table("tableid");
+$table = new Table('App\Models\UserModel');
 // or
+$model = new \App\Models\UserModel;
+$table = new Table($model);
+
+```
+
+### Table ID
+By default, ci4bs4table use the table name of the model as table id.
+We can change this.
+
+```php
 $table->Id("tableid");
 ```
 
 ### Table Caption
+Adds a table caption. If pagination is enabled, more than one caption is shown.
 ```php
 $table->Caption("Table Caption");
 ```
@@ -102,74 +139,107 @@ $table->Hover();       // table-hover
 ```
 
 ### Codeigniter Uri
+By default, ci4bs4table use the current uri of the page.
+We can change this.
 ```php
 // https://your.site.com/table
 $table->Uri('table');
 ```
 
-### Codeigniter Request and Model
+## Table Columns
+
+If no column adds manually, all field are added as columns.
+
+### Add all Columns manually
+
 ```php
-$table->addRequest( \Config\Services::request() );
-$table->addModel( $this->model );
+$table->addColumns();
 ```
 
-## Thead Full Example
+### Add a Column
 
 ```php
+$table->addColumn("table_fieldname");
+```
+
+### Select a Column
+
+```php
+$table->Column("table_fieldname");
+
+```
+After that we can do changes on the column
+
+### Remove a Column
+
+```php
+$table->addColumns();
+$table->removeColumn("not_needed_fieldname");
+
+```
+
+### Align a Column
+```php
+$table->addColumn("align_right_fieldname")->Right();
+$table->addColumn("align_center_fieldname")->Center();
+```
+
+### Set Column Label
+
+```php
+$table->addColumn('id')->Label("#");
+```
+
+### Set Options
+
+With options we can replace values in filter checkboxes and in cells.
+
+```php
+$table = new Table('App\Models\UserModel');
 // Options
-$options["enabled"] = ["1"=>"Aktiviert","0"=>"Deaktiviert"];
-
-// THead
-$th = $table->Thead();
-$th->Th('#');
-$th->Th("Benutzername")->Field("username")->Sort()->Filter();
-$th->Th("Vorname")     ->Field("surname") ->Sort()->Filter();
-$th->Th("Nachname")    ->Field("lastname")->Sort()->Filter();
-$th->Th("Password")    ->Field("password")->Sort()->Filter();
-$th->Th("SID")         ->Field("sid")     ->Sort()->Filter();
-$th->Th("Enabled")     ->Field("enabled") ->Sort()->Filter("checkbox",$options["enabled"]);
-$th->Th("Test Datum")  ->Field("testdate")->Sort()->Filter();
-$th->Th("Test JSON")   ->Field("testjson")->Sort()->Filter();
-$th->Th(""); // a column for action buttons
+$options["enabled"] = ["1"=>"Yes","0"=>"No"];
+$options["surname"] = ["Ralf"=>" R-A-L-F "];
+$table->Options($options);
 ```
-### Add Table Columns
+
+### Replace default value with custom html code
+
 
 ```php
-$th = $table->Thead();
-$th->Th('Col1');
-$th->Th('Col2');
-$th->Th('Col3');
-$th->Th('Col4');
+$table->addColumn()->Html('<button class="btn btn-sm btn-primary" type="button">Edit {id}</button>');
+$table->addColumn()->Html('<button class="btn btn-sm btn-danger" type="submit">Remove {id}</button>');
 ```
+
+### Replace default value with icons based on condition
+
+In this excample we use Bootstrap icons.
+
+```php
+    $table->addColumns();
+    $table->Column("enabled")->Icon('check-lg',["{enabled}","==","1"],'text-success');
+    $table->Column("enabled")->Icon('x-lg',    ["{enabled}","==","0"],'text-danger' );
+    // or
+    $table->addColumn('enabled')
+        ->Icon('check-lg',["{enabled}","==","1"],'text-success')
+        ->Icon('x-lg',["{enabled}","==","0"],'text-danger');
+```
+
+## Sort
+
+As default, all fields are marked as sortable. In config file we can change the default on false.
 
 ### Make Table Column Sortable
 To make a table column sortable, you must set the sorted field.
 
 ```php
-$th->Th("Benutzername")->Field("username")->Sort();
+$table->Column("enabled")->Sort();
 ```
+
+## Filter
 
 ### Make Table Column Filterable
-To make a table column filterable, you must set the filtered field.
-As default, a textfield is used to filter a column. In this case you can write a 0 (disabled) or a 1 (enabled) in the textfield.
+As default, all fields are marked as filterable. In config file we can change the default on false.
 
-![Filter](filter_unfiltered.png)
 ```php
-// Options
-$th->Th("Enabled")->Field("enabled")->Filter();
+$table->Column("enabled")->Filter("checkbox");
 ```
-![Filter Textbox](filter_text.png)
-
-You can choose to display the filter as a group of checkboxes. An array with the options must be transferred for this.
-```php
-$options["enabled"] = ["1"=>"Aktiviert","0"=>"Deaktiviert"];
-$th->Th("Enabled")->Field("enabled")->Sort()->Filter("checkbox",$options["enabled"]);
-```
-![Filter Checkbox](filter_checkbox.png)
-
-In CodeIgniter 4 View
-
-```html
-<?= $form->toHtml() ?>
-```
-

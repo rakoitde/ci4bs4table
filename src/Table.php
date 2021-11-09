@@ -681,10 +681,9 @@ class Table
                 $fieldtype=$this->_fields[$field]->fieldtype;
 
                 // Date
-                if ($fieldtype=='date') {
+                if (in_array($fieldtype, ['int','decimal','float','currency','number','date'])) {
 
                     $datefilter = $filters[$field];
-
                     $islaterorequal   = substr($datefilter, 0, 2)==">=" ?? false;
                     $isearlierorequal = substr($datefilter, 0, 2)=="<=" ?? false;
                     $datefilter = $islaterorequal || $isearlierorequal ? substr($datefilter, 2) : $datefilter;
@@ -718,8 +717,14 @@ class Table
 
                 }
 
+                // integer, decimal, float, currency
+                if ( in_array($fieldtype, ['int','decimal','float','currency','number']) ) {
+
+                }
+
+
                 // string
-                if ( is_string($filter) && $fieldtype!='date' )
+                if ( is_string($filter) && !in_array($fieldtype, ['int','decimal','float','currency','number','date']) )
                 {
                     $side = "";
                     if (mb_strpos($filter, "*") !== false) {
@@ -730,7 +735,7 @@ class Table
                 }
 
                 // select
-                if (is_array($filter)) {
+                if (is_array($filter) && !in_array($fieldtype, ['int','decimal','float','currency','number','date'])) {
                     $this->model->groupStart();
                     foreach ($filter as $key => $value) {
                         $this->model->orWhere($field, $key);
@@ -759,8 +764,6 @@ class Table
             $this->model->orderBy($key, $value);
         }
 
-        #$this->Caption($this->model->getCompiledSelect(false));
-
         // paginate or not
         if ($this->paginate) {
             $this->entities = $this->model->paginate( $this->perpage );
@@ -768,6 +771,7 @@ class Table
         } else {
             $this->entities = $this->model->findAll();
         }
+
 
         return $this->entities;
     }
@@ -922,9 +926,9 @@ class Table
         // set defaults
         $this->sortable = $this->config->sortable;
         $this->filterable = $this->config->filterable;
-        if ($this->config->size=='sm') { $this->Small(); }
+        if ($this->config->small)   { $this->Small(); }
         if ($this->config->striped) { $this->Striped(); }
-        if ($this->config->hover) { $this->Hover(); }
+        if ($this->config->hover)   { $this->Hover(); }
 
         #$this->template = config("Rakoitde\ci4bs4table\Config\\".$this->config->templatename); 
         $this->template = config($this->config->templatename); 
