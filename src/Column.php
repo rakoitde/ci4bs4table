@@ -1,6 +1,6 @@
 <?php
 
-namespace Rakoitde\ci4bs4table;
+namespace Rakoitde\Ci4bs4table;
 
 use Config\Services;
 
@@ -12,44 +12,118 @@ class Column
 
     use ClassFilterTrait;
 
+    /**
+     * the ci4table config
+     * @var object
+     */
     protected $config;
 
+    /**
+     * fieldname
+     * @var
+     * 
+     */
     public string $fieldname;
 
+    /**
+     * Field instance
+     * @var Field
+     */
     protected Field $field;
 
+    /**
+     * label
+     * @var string
+     */
     protected string $label;
 
+    /**
+     * sortable
+     * @var bool
+     */
     protected bool $sortable;
 
+    /**
+     * sort direction
+     * @var string
+     */
     protected string $sortdirection;
 
+    /**
+     * next sort direction
+     * @var string
+     */
     protected string $sortnextdirection;
 
+    /**
+     * sort direction icon
+     * @var string
+     */
     protected string $sortdirectionicon;
 
+    /**
+     * filterable
+     * @var bool
+     */
     protected bool $filterable;
 
+    /**
+     * type of filter
+     * @var string
+     */
     protected string $filtertype;
 
+    /**
+     * filter options
+     * @var array
+     */
     protected array $filteroptions; 
 
+    /**
+     * format type
+     * @var string
+     */
     protected string $formattype = 'text';
 
+    /**
+     * format string
+     * @var string
+     */
     protected string $format;
 
+    /**
+     * options
+     * @var array
+     */
     protected array $options;
 
+    /**
+     * filter value
+     * @var ???
+     */
     protected $filtervalue;
 
+    /**
+     * html with conditions
+     * @var array
+     */
     protected array $htmlcondition;
 
-    protected $tfocus='tbody';
+    /**
+     * sets the focus for changes to thead, tbody or tfoot.
+     *
+     * @var string
+     */
+    protected string $tfocus='tbody';
 
+    /**
+     * added classes as array
+     * @var array
+     */
     private array $classes;
 
     /**
-     * { function_description }
+     * field instance
      *
      * @param      Field  $field  The field
      *
@@ -57,11 +131,8 @@ class Column
      */
     public function Field(Field $field): self 
     {
-
         $this->field = $field;
-
         return $this;
-
     }
 
     /**
@@ -74,7 +145,6 @@ class Column
     public function Label(string $label): self 
     {
         $this->label = $label;
-
         return $this;
     }
 
@@ -202,8 +272,6 @@ class Column
         $this->filteroptions = $options;
         $this->options = $options;
 
-# d($this->fieldname, $this->field->formfieldtype, $this->field->maxlength, $this->field->precision, $this->filteroptions, $type);
-
         return $this;
     }
 
@@ -218,7 +286,7 @@ class Column
     }
 
     /**
-     * { function_description }
+     * sets the filtervalues
      *
      * @param      <type>  $filtervalue  The filtervalue
      *
@@ -230,6 +298,13 @@ class Column
         return $this;
     }
 
+    /**
+     * returns the filtervalues
+     *
+     * @param      string  $key    The key
+     *
+     * @return     <type>  The filtervalue.
+     */
     public function getFiltervalue(string $key = null)
     {
 
@@ -238,18 +313,38 @@ class Column
         return $this->filtervalue ?? '';
     }
 
-    public function getFiltertype()
+    /**
+     * returns the filter type
+     *
+     * @return     string  The filtertype.
+     */
+    public function getFiltertype(): string
     {
         return $this->filtertype ?? '';
     }
 
-    public function Format($type, string $format = ""): self
+    /**
+     * sets the format type end format string
+     *
+     * @param      string  $type    The type
+     * @param      string  $format  The format
+     *
+     * @return     self    ( description_of_the_return_value )
+     */
+    public function Format(string $type, string $format = ""): self
     {
         $this->formattype = $type;
         $this->format = $format;
         return $this;
     }
 
+    /**
+     * sets the options
+     *
+     * @param      array  $options  The options
+     *
+     * @return     self   ( description_of_the_return_value )
+     */
     public function Options(array $options): self 
     {
         $this->options = $options;
@@ -257,12 +352,24 @@ class Column
         return $this;
     }
 
+    /**
+     * get the options
+     *
+     * @return     array  The options.
+     */
     public function getOptions(): array 
     {
         return $this->options ?? [];
     }
 
-    public function getOption($text) 
+    /**
+     * get a option by key
+     *
+     * @param      string  $text   The text
+     *
+     * @return     string  The option.
+     */
+    public function getOption(string $text) 
     {
         if ($text===NULL) { return ''; }
         return $this->options[$text] ?? $text;
@@ -290,6 +397,14 @@ class Column
         return $this;
     }
 
+    /**
+     * Adds a class.
+     *
+     * @param      string  $class   The class
+     * @param      <type>  $tfocus  The tfocus
+     *
+     * @return     self    ( description_of_the_return_value )
+     */
     public function addClass(string $class, $tfocus = null): self
     {
         $classes = explode(" ", $class);
@@ -304,6 +419,12 @@ class Column
         return $this;
     }
 
+    /**
+     * Adds classes.
+     *
+     * @param      array   $classes  The classes
+     * @param      <type>  $tfocus   The tfocus
+     */
     public function addClasses(array $classes, $tfocus = null)
     {
         foreach ($classes as $class) {
@@ -311,35 +432,74 @@ class Column
         }
     }
 
+    /**
+     * Gets the classes as string
+     *
+     * @param      string  $tfocus  The tfocus
+     *
+     * @return     string  The classes.
+     */
     public function getClasses($tfocus='tbody'): string
     {
         return isset($this->classes[$tfocus]) ? implode(" ", $this->classes[$tfocus]) : "";
     }
 
+    /**
+     * Center
+     * adds text-center class on focus
+     *
+     * @param      array  $tfocus  The tfocus
+     *
+     * @return     self   ( description_of_the_return_value )
+     */
     public function Center($tfocus=['tbody','thead','tfoot']):self 
     {
         $this->addClass("text-center", $tfocus);
         return $this;
     }
 
+    /**
+     * Right
+     * Adds text-right class on focus
+     *
+     * @param      array  $tfocus  The tfocus
+     *
+     * @return     self   ( description_of_the_return_value )
+     */
     public function Right($tfocus=['tbody','thead','tfoot']):self 
     {
         $this->addClass("text-right", $tfocus);
         return $this;
     }
 
-
-    public function Html(string $html, array $conditions = [], array $convert = []): self
+    /**
+     * Adds a html string with conditions
+     *
+     * @param      string  $html        The html
+     * @param      array   $conditions  The condition as array ['{field}','==','0']
+     * @param      array   $convert     The convert
+     *
+     * @return     self    ( description_of_the_return_value )
+     */
+    public function Html(string $html, array $conditions = []): self
     {
         $htmlcondition = new \stdClass();
         $htmlcondition->html      = $html;
         $htmlcondition->conditions = $conditions;
-        $htmlcondition->convert   = $convert;
         $this->htmlcondition[] = $htmlcondition;
         return $this;
     }
 
-    public function convert($oldrow, $convert): array
+    /**
+     * Convert
+     * ??????
+     *
+     * @param      <type>  $oldrow   The oldrow
+     * @param      <type>  $convert  The convert
+     *
+     * @return     array   ( description_of_the_return_value )
+     */
+    public function ___convert($oldrow, $convert): array
     {
         $row = [];
         foreach ($oldrow as $key => $value) {
@@ -375,6 +535,13 @@ class Column
         return $row;
     }
 
+    /**
+     * returns the formated value
+     *
+     * @param      <type>  $value  The value
+     *
+     * @return     <type>  ( description_of_the_return_value )
+     */
     private function formatValue($value) 
     {
         $value = $this->formattype=="date"     ? date_format(date_create($value), $this->format) : $value;
@@ -386,6 +553,13 @@ class Column
         return $value;
     }
 
+    /**
+     * Gets the value.
+     *
+     * @param      <type>  $row    The row
+     *
+     * @return     string  The value.
+     */
     public function getValue($row): string
     {
         $parsedRows = $this->parseRowWithOptions($row);
@@ -399,49 +573,38 @@ class Column
 
             $value = $this->parser->setData($parsedRows)->renderString($h->html);
             $value = $this->formatValue($value);
-// if ($fieldname=="enabled" && $row->id=="2") {
-//     d([$fieldname, $h->html, $value, $row->$fieldname, $this->getOption($row->$fieldname)]);
-// }
 
             if (count($h->conditions)===0) { 
                 $html.= $value; 
                 continue; 
             }
 
-            #foreach ($h->conditions as $condition) {
+            list($operand_a, $operator, $operand_b) = $h->conditions;
 
-                list($operand_a, $operator, $operand_b) = $h->conditions;
-
-                $op_a = $this->parser->setData($row->toArray())->renderString($operand_a);
-                $op_b = $this->parser->setData($row->toArray())->renderString($operand_b);
-                switch ($operator) {
-                    case '==':
-                        $html.= ($op_a == $op_b) ? $value : ""; break;
-                    case '!=':
-                        $html.= ($op_a != $op_b) ? $value : ""; break;
-                    case '>=':
-                        $html.= ($op_a >= $op_b) ? $value : ""; break;
-                    case '<=':
-                        $html.= ($op_a <= $op_b) ? $value : ""; break;
-                    case '>':
-                        $html.= ($op_a > $op_b) ? $value : ""; break;
-                    case '<':
-                        $html.= ($op_a < $op_b) ? $value : ""; break;
-                    case 'in':
-                        $html.= (in_array($op_a, explode(",", $filter->op_b))) ? $value : ""; break;
-                    case '!in':
-                        $html.= (!in_array($op_a, explode(",", $filter->op_b))) ? $value : ""; break;
-                    case 'between':
-                        $v = explode(",",$filter->op_b);
-                        $html.= ($op_a >= $v[0] && $op_a <= $v[1]) ? $value : ""; break;
-                    default:
-                        $html.= ""; break;
-                }
-            #}
-
-            if (count($h->convert)>0) {
-                $row2 = $this->convert($row, $h->convert);
-d($h->convert);
+            $op_a = $this->parser->setData($row->toArray())->renderString($operand_a);
+            $op_b = $this->parser->setData($row->toArray())->renderString($operand_b);
+            switch ($operator) {
+                case '==':
+                    $html.= ($op_a == $op_b) ? $value : ""; break;
+                case '!=':
+                    $html.= ($op_a != $op_b) ? $value : ""; break;
+                case '>=':
+                    $html.= ($op_a >= $op_b) ? $value : ""; break;
+                case '<=':
+                    $html.= ($op_a <= $op_b) ? $value : ""; break;
+                case '>':
+                    $html.= ($op_a > $op_b) ? $value : ""; break;
+                case '<':
+                    $html.= ($op_a < $op_b) ? $value : ""; break;
+                case 'in':
+                    $html.= (in_array($op_a, explode(",", $filter->op_b))) ? $value : ""; break;
+                case '!in':
+                    $html.= (!in_array($op_a, explode(",", $filter->op_b))) ? $value : ""; break;
+                case 'between':
+                    $v = explode(",",$filter->op_b);
+                    $html.= ($op_a >= $v[0] && $op_a <= $v[1]) ? $value : ""; break;
+                default:
+                    $html.= ""; break;
             }
         }
 
@@ -449,6 +612,15 @@ d($h->convert);
         return $html;
     }
 
+    /**
+     * Adds a icon string with conditions
+     *
+     * @param      string  $icon       The icon
+     * @param      array   $condition  The condition
+     * @param      string  $class      The class
+     *
+     * @return     self    ( description_of_the_return_value )
+     */
     public function Icon(string $icon, array $condition = [], string $class = ""): self
     {
         $html = str_replace("{icon}", $icon, $this->template->icontag);

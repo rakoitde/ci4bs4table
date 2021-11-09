@@ -1,13 +1,13 @@
 <?php
 
-namespace Rakoitde\ci4bs4table;
+namespace Rakoitde\Ci4bs4table;
 
 use CodeIgniter\HTTP\IncomingRequest;
 
 /**
  * This class describes a table.
  */
-class Table extends TableElement
+class Table
 {
 
     public string $id = "table";
@@ -23,6 +23,12 @@ class Table extends TableElement
     protected tbody $tbody;
 
     protected tfoot $tfoot;
+
+    private array $classes;
+
+    protected string $uri;
+
+    protected array $values;
 
     protected IncomingRequest $request;
 
@@ -75,6 +81,68 @@ class Table extends TableElement
     {
         $this->caption = $caption;
         $this->captions[] = $caption;
+        return $this;
+    }
+
+    /**
+     * Adds a class.
+     *
+     * @param      string  $class  The class
+     *
+     * @return     self    ( description_of_the_return_value )
+     */
+    public function addClass(string $class): self
+    {
+        $classes = explode(" ", $class);
+        foreach ($classes as $class) {
+            $this->classes[] = $class;
+        }
+        return $this;
+    }
+
+    /**
+     * Gets the classes.
+     *
+     * @return     string  The classes.
+     */
+    public function getClasses(): string
+    {
+        return isset($this->classes) ? implode(" ", $this->classes) : "";
+    }
+
+    /**
+     * { function_description }
+     *
+     * @param      string  $uri    The uri
+     *
+     * @return     self    ( description_of_the_return_value )
+     */
+    public function Uri(string $uri): self
+    {
+        $this->uri = $uri;
+        return $this;
+    }
+
+    /**
+     * Gets the uri.
+     *
+     * @return     string  The uri.
+     */
+    public function getUri(): string
+    {
+        return $this->uri;
+    }
+
+    /**
+     * { function_description }
+     *
+     * @param      <type>  $values  The values
+     *
+     * @return     self    ( description_of_the_return_value )
+     */
+    public function Values($values): self
+    {
+        $this->values = $values;
         return $this;
     }
 
@@ -263,48 +331,6 @@ class Table extends TableElement
     {
         $this->filterable = $filterable;
         return $this;
-    }
-
-    /**
-     * { function_description }
-     *
-     * @return     Thead  ( description_of_the_return_value )
-     */
-    public function ___Thead(): Thead
-    {
-        if(!isset($this->thead)) { $this->thead = new Thead(); }
-        $this->thead->Uri($this->uri);
-        $this->thead->Values($this->values);
-        $this->thead->_fields = $this->_fields;
-        return $this->thead;
-    }
-
-    /**
-     * { function_description }
-     *
-     * @return     Tbody  ( description_of_the_return_value )
-     */
-    public function ___Tbody(): Tbody
-    {
-        if(!isset($this->tbody)) { $this->tbody = new Tbody(); }
-        $this->tbody->Uri($this->uri);
-        $this->tbody->Values($this->values);
-        $this->tbody->addEntities($this->getEntities());
-        $this->tbody->_fields = $this->_fields;
-        return $this->tbody;
-    }
-
-    /**
-     * { function_description }
-     *
-     * @return     Tfoot  ( description_of_the_return_value )
-     */
-    public function ___Tfoot(): Tfoot
-    {
-        if(!isset($this->tfoot)) { $this->tfoot = new Tfoot(); }
-        $this->tfoot->Uri($this->uri);
-        $this->tfoot->Values($this->values);
-        return $this->tfoot;
     }
 
     /**
@@ -582,59 +608,6 @@ class Table extends TableElement
     }
 
     /**
-     * Returns a html representation of the object.
-     *
-     * @return     string  Html representation of the object.
-     */
-    public function ___toHtml(): string
-    {
-        $data = [
-            "pager"        => $this->model->pager,
-            "tableid"      => $this->id,
-            "tableclasses" => $this->getClasses(),
-            "caption"      => $this->caption ?? '',
-            "method"       => $this->config->method,
-            "baseurl"      => $this->uri,
-            "thead"        => $this->thead ?? null,
-            "tbody"        => $this->tbody ?? null,
-            "tfoot"        => $this->tfoot ?? null,
-        ];
-#d($this->thead);
-#d($data);
-        $html="";
-#$html = view('Rakoitde\ci4bs4table\Views\Table', $data);
-
-
-        $table = PHP_EOL.'<!-- Start Table: '.$this->id.' -->'.PHP_EOL;
-        $table.= '<table id="' . $this->id .'" class="'.$this->getClasses().'">'.PHP_EOL;
-        $table.= isset($this->caption) ? "\t<caption>".$this->caption."</caption>".PHP_EOL : "";
-        if (!isset($this->caption)) {
-            $pager = $this->model->pager;
-            $table.= "\t<caption>Datensatz ".
-            min(($pager->getCurrentPage()*$pager->getPerPage())-$pager->getPerPage()+1, $pager->getTotal())." bis ".
-            min($pager->getCurrentPage()*$pager->getPerPage(), $pager->getTotal())." von ".
-            $pager->getTotal()."</caption";
-        }
-        $table.= $this->Thead()->toHtml();
-        $table.= $this->Tbody()->toHtml();
-        $table.= $this->Tfoot()->toHtml();
-        $table.= '</table>'.PHP_EOL;
-        $table.= '<!-- End Table: '.$this->id.' -->'.PHP_EOL;
-        return $html.$table;
-    }
-
-    /**
-     * Returns a json representation of the object.
-     *
-     * @return     string  Json representation of the object.
-     */
-    public function ___toJson(): string
-    {
-        $json = json_encode($this);
-        return $json;
-    }
-
-    /**
      * Adds a request.
      *
      * @param      \CodeIgniter\HTTP\IncomingRequest  $request  The request
@@ -696,7 +669,7 @@ class Table extends TableElement
      */
     public function getEntities()
     {
-// Filter
+
         $filters  = $this->getFilter();
 
         if (count($filters)>0) {
@@ -953,7 +926,8 @@ class Table extends TableElement
         if ($this->config->striped) { $this->Striped(); }
         if ($this->config->hover) { $this->Hover(); }
 
-        $this->template = config("Rakoitde\ci4bs4table\Config\\".$this->config->templatename); 
+        #$this->template = config("Rakoitde\ci4bs4table\Config\\".$this->config->templatename); 
+        $this->template = config($this->config->templatename); 
         $this->perpage = $this->config->perpage;
         $this->addModel( );
         $this->request = \Config\Services::request();

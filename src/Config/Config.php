@@ -2,115 +2,89 @@
 
 namespace Rakoitde\Ci4bs4table\Config;
 
+
+/**
+ * This class describes the default ci4table configuration.
+ */
 class Config
 {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Bootstrap Small Table
-    |--------------------------------------------------------------------------
-    |
-    | To use the Bootstrap Small Table, set this variable to "sm", otherwise
-    | set this variable to ""
-    |
-    */
+    /**
+     * Set size to all somponents to 'sm', 'lg' od ''
+     * @var string
+     */
 	public string $size = "";
 
+    /**
+     * table striped
+     * @var bool
+     */
     public bool $striped = true;
 
+    /**
+     * table hoover
+     * @var bool
+     */
     public bool $hover = true;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Method to get the requested variables
-    |--------------------------------------------------------------------------
-    |
-    | Set this variable to "get" or "post". But Post are actually not tested
-    |
-    */
-    public string $method = "get";
-
-
+    /**
+     * table is sortable
+     * @var bool
+     */
     public bool $sortable = true;
 
-
+    /**
+     * table is filterable
+     * @var bool
+     */
     public bool $filterable = true;
 
-
+    /**
+     * paginate table
+     * @var bool
+     */
     public bool $paginate = true;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Sort
-    |--------------------------------------------------------------------------
-    |
-    | Set the sort variable which holds the selected sorts
-    |
-    */
-    public string $sortvar = "_sort_";
+    /**
+     * prefix for all sort vars
+     * @var string
+     */
+    public string $sortvar = "_sort";
 
-    /*
-    |--------------------------------------------------------------------------
-    | Search
-    |--------------------------------------------------------------------------
-    |
-    | Set the search variable is used in a fulltext search field
-    |
-    */
-    public string $searchvar = "_search_";
+    /**
+     * prefix for the search var
+     * @var string
+     */
+    public string $searchvar = "_search";
 
-    /*
-    |--------------------------------------------------------------------------
-    | Filter
-    |--------------------------------------------------------------------------
-    |
-    | Set the filter variable which holds the selected filters
-    |
-    */
+    /**
+     * prefix for all filter vars
+     * @var string
+     */
     public string $filtervar = "_filter_";
 
-    /*
-    |--------------------------------------------------------------------------
-    | Per Page Pagination Variable
-    |--------------------------------------------------------------------------
-    |
-    | Set the perpage variable which holds the selected per page size
-    |
-    */
-    public string $perpagevar = "_perpage_";
+    /**
+     * prefix for the perpage var
+     * @var string
+     */
+    public string $perpagevar = "_perpage";
 
-
+    /**
+     * options for the per page size select
+     * @var array
+     */
     public array $perpage_sizes = [10,15,20,25,50,100,200,500];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Per Page Pagination Value
-    |--------------------------------------------------------------------------
-    |
-    | Set the default per page size
-    |
-    */
+    /**
+     * default per page size
+     * @var int
+     */
     public int $perpage = 15;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Icontag
-    |--------------------------------------------------------------------------
-    |
-    | Define the icon-tag template. {icon} holds the icon class and {class} additional
-    | classes like "text-warning" color.
-    |
-    */
-    public string $icontag = '<i class="bi bi-{icon}{class}"></i>';
-
-    /*
-    |--------------------------------------------------------------------------
-    | Format
-    |--------------------------------------------------------------------------
-    |
-    | Define the default format for different type of data.
-    |
-    */
+    /**
+     * default formats for field types
+     * @var array
+     */
     public array $format = ["date"     => "d.m.Y",       # 01.01.2021
                             "datetime" => "d.m.Y H:i:s", # 01.01.2021 12:30:00
                             "decimal"  => "2",           # precision 123,45
@@ -118,25 +92,28 @@ class Config
                             "currency" => "EUR",         # 1.234,56 €
                         ];
 
+    /**
+     * default options for field types
+     * @var array
+     */
     public array $options = [
         'checkbox' => ['1' => 'Ja', '0' => 'Nein'],
     ];  
 
-    /*
-    |--------------------------------------------------------------------------
-    | Directionicon
-    |--------------------------------------------------------------------------
-    |
-    | Define the default Icons for the sort directions.
-    |
-    */
+    /**
+     * default icons for sort directions
+     * @var array
+     */
     public array $directionicon = [
                 ''=>'', 
                 'asc'=>'<i class="bi bi-sort-down-alt"></i>', 
                 'desc'=>'<i class="bi bi-sort-up"></i>'
         ];
 
-
+    /**
+     * used template config
+     * @var string
+     */
     public string $templatename = 'TemplateBS4';
 
 }

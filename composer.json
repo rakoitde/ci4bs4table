@@ -9,7 +9,7 @@
     ],
     "homepage": "https://github.com/rakoitde/ci4bs4table",
     "type": "package",
-    "version": "1.0.0.3",
+    "version": "1.0.0.4",
     "license": "MIT",
     "authors": [
         {
@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Rakoitde\\ci4bs4table\\": "src"
+            "Rakoitde\\Ci4bs4table\\": "src"
         }
     },
     "autoload-dev": {
