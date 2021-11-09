@@ -903,7 +903,7 @@ class Table
      */
     public function __construct($model) {
 
-        $this->config = new \Rakoitde\ci4bs4table\Config\Config();
+        $this->config = new Config\Config();
 
         if (is_string($model)) { 
             $this->model = model($model); 
@@ -928,6 +928,7 @@ class Table
 
         #$this->template = config("Rakoitde\ci4bs4table\Config\\".$this->config->templatename); 
         $this->template = config($this->config->templatename); 
+
         $this->perpage = $this->config->perpage;
         $this->addModel( );
         $this->request = \Config\Services::request();
