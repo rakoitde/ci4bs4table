@@ -3,3 +3,5 @@
 composer.lock
 vendor/
 src/.DS_Store
+*.cache
+*.php~
