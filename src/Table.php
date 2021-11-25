@@ -618,7 +618,7 @@ class Table
                 $fieldtype=$this->fields[$field]->fieldtype;
 
                 // Date
-                if (in_array($fieldtype, ['int','decimal','float','currency','number','date'])) {
+                if (!is_array($filter) && in_array($fieldtype, ['int','decimal','float','currency','number','date'])) {
 
                     $islaterorequal   = substr($filter, 0, 2)==">=" ?? false;
                     $isearlierorequal = substr($filter, 0, 2)=="<=" ?? false;
@@ -652,12 +652,6 @@ class Table
                     }
 
                 }
-
-                // integer, decimal, float, currency
-                if ( in_array($fieldtype, ['int','decimal','float','currency','number']) ) {
-
-                }
-
 
                 // string
                 if ( is_string($filter) && !in_array($fieldtype, ['int','decimal','float','currency','number','date']) )
