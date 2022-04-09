@@ -225,6 +225,10 @@ class Table
         }
     }
 
+    public function getFieldnames() {
+        return $this->fieldnames;
+    }
+
     /**
      * Adds a column.
      *
@@ -604,7 +608,7 @@ class Table
      *
      * @return     <type>  The entities.
      */
-    public function getEntities()
+    public function getEntities(bool $asArray = false)
     {
 
         $filters  = $this->getFilterVars();
@@ -616,9 +620,8 @@ class Table
                 if ($filter=="") { continue; }
 
                 $fieldtype=$this->fields[$field]->fieldtype;
-
                 // Date
-                if (!is_array($filter) && in_array($fieldtype, ['int','decimal','float','currency','number','date'])) {
+                if (!is_array($filter) && in_array($fieldtype, ['int','decimal','float','currency','number','date']) ) {
 
                     $islaterorequal   = substr($filter, 0, 2)==">=" ?? false;
                     $isearlierorequal = substr($filter, 0, 2)=="<=" ?? false;
@@ -665,7 +668,7 @@ class Table
                 }
 
                 // select
-                if (is_array($filter) && !in_array($fieldtype, ['int','decimal','float','currency','number','date'])) {
+                if (is_array($filter)) {  # && !in_array($fieldtype, ['int','decimal','float','currency','number','date'])
                     $this->model->groupStart();
                     foreach ($filter as $key => $value) {
                         $this->model->orWhere($field, $key);
@@ -694,13 +697,14 @@ class Table
         }
 
         // paginate or not
-        if ($this->paginate) {
+        if ($this->paginate && $asArray===false) {
             $this->entities = $this->model->paginate( $this->perpage );
             $this->addPagerCaption();
+        } elseif ($asArray===true) {
+            $this->entities = $this->model->asArray()->findAll();
         } else {
             $this->entities = $this->model->findAll();
         }
-
 
         return $this->entities;
     }
