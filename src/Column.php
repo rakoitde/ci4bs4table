@@ -571,17 +571,21 @@ class Column
         $fieldname = $this->fieldname;
 
         if (!isset($this->htmlcondition)) { 
-
             $parsedFild = $parsedRows[$fieldname] ?? (string)$row->$fieldname;
-
             $value = is_string($parsedFild) ? $parsedFild : implode(", ", $parsedFild);
-            
             return $this->formatValue($value); /* $this->text; */ 
         }
 
         $html="";
 
         foreach ($this->htmlcondition as $h) {
+
+            // FIX Start: if data contains a key named 'template', the whole html string is replaced with the value of this key
+            if (isset($parsedRows['template'])) { 
+                str_replace('{template}', $parsedRows['template'], $h->html );
+                unset($parsedRows['template']);
+            }
+            // FIX End
 
             $value = $this->parser->setData($parsedRows)->renderString($h->html);
             $value = $this->formatValue($value);
