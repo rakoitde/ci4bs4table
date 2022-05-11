@@ -823,6 +823,39 @@ class Table
     }
 
     /**
+     * CSV Eport
+     *
+     * @param      <type>  $result   The result
+     * @param      <type>  $headers  The headers
+     */
+    public function csv(){
+
+d($this);
+        return;
+        /* file name */
+        $filename = 'orders_'.date('Ymd').'.csv';
+        header("Content-Description: File Transfer");
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Content-Type: application/csv; ");
+ 
+        // get data
+        #$users = new Users();
+        #$usersData = $users->select('*')->findAll();
+ 
+        // file creation
+        $file = fopen('php://output', 'w');
+ 
+        $header = array_keys($result);
+        $header = $headers;
+        fputcsv($file, $header);
+        foreach ($result as $key=>$line){
+            fputcsv($file,$line);
+        }
+        fclose($file);
+        exit;
+    }
+
+    /**
      * Constructs a new instance.
      *
      * @param      string  $modelname  The modelname

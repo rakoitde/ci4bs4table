@@ -5,3 +5,4 @@ vendor/
 src/.DS_Store
 *.cache
 *.php~
+src/.DS_Store
