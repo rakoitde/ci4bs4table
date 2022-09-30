@@ -750,7 +750,7 @@ class Table
     public function getSearchVars(): string
     {
 
-        return $this->filtervalues[$this->config->searchvar] ?? '';
+        return trim($this->filtervalues[$this->config->searchvar]) ?? '';
 
         $searchvar = $this->config->searchvar;
         if (isset($this->filtervalues[$searchvar])) { return $this->filtervalues[$searchvar]; }
