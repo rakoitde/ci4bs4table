@@ -12,7 +12,7 @@ class TemplateBS4
 
 	// search field and buttons
 	public string $search_field       = '<input type="search" name="{searchvar}" class="form-control form-control-sm w-auto" value="{value}" form="{formid}">';
-	public string $submit_button      = '<button class="btn btn-outline-secondary" type="submit" form="{formid}">Suchen</button>';
+    public string $submit_button      = '<button name="btn-table-search" class="btn btn-outline-secondary" type="submit" form="{formid}">Suchen</button>';
 	public string $reset_button       = '<a role="button" class="btn btn-outline-secondary" href="{uri}">Filter löschen</a>';
 
 	// inline form with page select, search field and buttons
