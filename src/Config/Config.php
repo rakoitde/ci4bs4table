@@ -85,12 +85,13 @@ class Config
      * default formats for field types
      * @var array
      */
-    public array $format = ["date"     => "d.m.Y",       # 01.01.2021
-                            "datetime" => "d.m.Y H:i:s", # 01.01.2021 12:30:00
-                            "decimal"  => "2",           # precision 123,45
-                            "float"    => "2",           # precision 123,45
-                            "currency" => "EUR",         # 1.234,56 €
-                        ];
+    public array $format = [
+        "date"     => "d.m.Y",       # 01.01.2021
+        "datetime" => "d.m.Y H:i:s", # 01.01.2021 12:30:00
+        "decimal"  => "2",           # precision 123,45
+        "float"    => "2",           # precision 123,45
+        "currency" => "EUR",         # 1.234,56 €
+    ];
 
     /**
      * default options for field types
